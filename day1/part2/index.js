@@ -51,12 +51,11 @@ function getFirstAndLastInt(str) {
     return parseInt(numbers[0] + numbers[numbers.length - 1]);
 }
 
-
+// replace occurences of string numbers with actual numbers, also keep into account that that numbers may be connected like 'eightwo'
 function ConvertTextNumbersToNumbersInString(str) {
     let indexesOfStringNumbers = [];
     let updatedString = str;
     
-    // find all the occurences of strings that represent a number, return those occurences as [startIndex, endIndex, value]
     for(const [key, value] of Object.entries(numberStrings)) {
 
         while (updatedString.indexOf(key) != -1) {
