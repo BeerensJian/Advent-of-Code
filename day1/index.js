@@ -12,19 +12,25 @@ readFile('./strings.txt', 'utf-8', (err, data) => {
     strings = data.split('\r\n');
 
     // push the numbers into final array
-    let finalNumbers = [];
+    let partOneNumbers = [];
+    let partTwoNumbers = []
     strings.forEach(str => {
+        partOneNumbers.push(getFirstAndLastInt(str))
         const convertedStr = ConvertTextNumbersToNumbersInString(str)
-        finalNumbers.push(getFirstAndLastInt(convertedStr));
+        partTwoNumbers.push(getFirstAndLastInt(convertedStr)); 
     })
 
 
-    // count all the numbers together
-    const sumOfNumbers = finalNumbers.reduce((accumulator, currentValue) => {
+    //count numbers together for each part
+    const part1 = partOneNumbers.reduce((accumulator, currentValue) => {
         return accumulator + currentValue
     }, 0)
 
-    console.log(sumOfNumbers)
+    const part2 = partTwoNumbers.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue
+    }, 0)
+
+    console.log(part1, part2)
 })
 
 const numberStrings = Object.freeze({
@@ -59,9 +65,9 @@ function ConvertTextNumbersToNumbersInString(str) {
     for(const [key, value] of Object.entries(numberStrings)) {
 
         while (updatedString.indexOf(key) != -1) {
-            const startIndex = updatedString.indexOf(key);
+            const startIndex = updatedString.indexOf(key) + 1;
             const endIndex = updatedString.indexOf(key) + key.length - 1;
-            const firstPart = updatedString.slice(0, startIndex + 1);
+            const firstPart = updatedString.slice(0, startIndex);
             const lastPart = updatedString.slice(endIndex);
             updatedString = firstPart + value + lastPart;
         }
