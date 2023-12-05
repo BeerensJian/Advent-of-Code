@@ -5,7 +5,7 @@ const almanac = readFileSync('./input.txt', 'utf-8');
 const lines = almanac.split("\r\n").filter((line) => line != '')
 const seeds = lines[0].split(':')[1].trim().split(' ').map((seed) => parseInt(seed))
 
-const mapOfMaps = new Map();
+const mapOfMaps = { }
 let mapNames = []
 
 for (let i = 1; i < lines.length; i++) {
@@ -14,48 +14,43 @@ for (let i = 1; i < lines.length; i++) {
     if (line.includes('map')) {
         mapKey = line.split(' ')[0]
         mapNames.push(mapKey)
-        let conversionMap = {}
+        let mappingValues = []
         let y = 1
         while(lines[i + y] !== undefined && !lines[i + y].includes('map')) {
-            ConvertStringToMap(lines[i + y], conversionMap)
+            mappingValues.push(lines[i + y].split(" ").map((number) => parseInt(number)))
             y++
         }
-        mapOfMaps.set(mapKey, conversionMap)
+        mapOfMaps[mapKey] = mappingValues
     }
 }
 
 
-const valuesForSeeds = []
-seeds.forEach(seed => {
-    const valuesForSeed = [seed]
-    // convert each seed to its final location value
-    // for each map convert to value to the next one and add it to array for single seed
-    mapNames.forEach(mapName => {
-        const currentMap = mapOfMaps.get(mapName)
-        const lastValue = valuesForSeed[valuesForSeed.length - 1]
-        if (currentMap[lastValue]) {
-            valuesForSeed.push(currentMap[lastValue])
-        } else {
-            valuesForSeed.push(lastValue)
+const seedsValuesList = seeds.map(seed => {
+    let seedValues = [seed]
+
+    for (let x = 0; x < mapNames.length; x++) {
+        const currentmap = mapNames[x]
+        let found = false;
+        mapOfMaps[currentmap].forEach(possibility => {
+            const [destinationStart, sourceStart, range] = possibility
+            if (found) return
+            for (let i = 0; i < range; i++) {
+                if (found) break
+                if (sourceStart + i === seedValues[seedValues.length - 1]) {
+                    seedValues.push(destinationStart + i)
+                    found = true
+                    break
+                }
+                
+            }
+        });
+    
+        if (seedValues.length < x + 2) {
+            seedValues.push(seedValues[x])
         }
-    })
-    valuesForSeeds.push(valuesForSeed)
-})
-
-//part1
-const lowestLocation = Math.min(...valuesForSeeds.map((seedValues) => seedValues[seedValues.length - 1]))
-console.log(valuesForSeeds)
-console.log(lowestLocation)
-
-
-
-
-function ConvertStringToMap(ConversionString, myMap) {
-    const [destStart, sourceStart, range] = ConversionString.split(' ').map(number => parseInt(number))
-    for (let i = 0; i < range; i++) {
-        const sourceNumber = sourceStart + i
-        const destinationNumber = destStart + i
-        myMap[sourceNumber] = destinationNumber
     }
-}
+    return seedValues
+}) 
 
+const ListOfLocations = seedsValuesList.map((seedValues) => seedValues[seedValues.length - 1])
+console.log(Math.min(...ListOfLocations))
