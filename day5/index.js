@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { BigMap } from './BigMap.js';
 
 const almanac = readFileSync('./input.txt', 'utf-8');
 const lines = almanac.split("\r\n").filter((line) => line != '')
